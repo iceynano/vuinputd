@@ -13,6 +13,8 @@ env:
 jobs:
   build-deb:
     runs-on: ubuntu-latest
+    container:
+      image: debian:bookworm
 
     steps:
       - name: Checkout source
@@ -22,31 +24,38 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          sudo apt update
+          apt update
           # cargo deps
-          sudo apt install -y \
+          apt install -y \
             build-essential \
             devscripts \
             debhelper \
             dh-cargo \
-            cargo \
-            rustc \
             pkg-config \
             libudev-dev \
             libfuse3-dev \
             fuse3 \
-            libclang-dev
-          # debian packages, if packages are not downloaded via cargo
-          sudo apt install -y librust-bindgen-dev librust-nix-dev librust-libc-dev librust-time-dev librust-log-dev librust-env-logger-dev librust-libudev-dev librust-regex-dev librust-async-channel-dev librust-futures-dev librust-async-io-dev librust-anyhow-dev librust-clap-dev librust-base64-dev
+            libclang-dev \
+            curl \
+            ca-certificates
+          # debian packages for rust crates
+          apt install -y librust-bindgen-dev librust-nix-dev librust-libc-dev librust-time-dev librust-log-dev librust-env-logger-dev librust-libudev-dev librust-regex-dev librust-async-channel-dev librust-futures-dev librust-async-io-dev librust-anyhow-dev librust-clap-dev librust-base64-dev || true
+
+      - name: Install Rust via rustup
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Show versions (debug)
         run: |
+          . "$HOME/.cargo/env"
           rustc --version
           cargo --version
           dpkg-buildpackage --version
 
       - name: Build Debian package
         run: |
+          . "$HOME/.cargo/env"
           dpkg-buildpackage -us -uc -b
 
       - name: Collect artifacts
