@@ -53,6 +53,12 @@ jobs:
           cargo --version
           dpkg-buildpackage --version
 
+      - name: Debug debian files
+        run: |
+          cat debian/rules
+          echo "---"
+          cat debian/control
+
       - name: Patch debian/rules for Debian 12 compatibility
         run: |
           sed -i 's/--with bash-completion//' debian/rules
