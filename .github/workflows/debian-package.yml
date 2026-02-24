@@ -53,6 +53,12 @@ jobs:
           cargo --version
           dpkg-buildpackage --version
 
+      - name: Patch debian/rules for Debian 12 compatibility
+        run: |
+          sed -i 's/--with bash-completion//' debian/rules
+          sed -i 's/dh-sequence-bash-completion,\s*//' debian/control
+          sed -i 's/,\s*dh-sequence-bash-completion//' debian/control
+
       - name: Build Debian package
         run: |
           . "$HOME/.cargo/env"
