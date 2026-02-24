@@ -56,7 +56,7 @@ jobs:
       - name: Build Debian package
         run: |
           . "$HOME/.cargo/env"
-          dpkg-buildpackage -us -uc -b
+          dpkg-buildpackage -us -uc -b -d
 
       - name: Collect artifacts
         run: |
