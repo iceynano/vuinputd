@@ -61,9 +61,7 @@ jobs:
 
       - name: Patch debian/rules for Debian 12 compatibility
         run: |
-          sed -i 's/--with bash-completion//' debian/rules
-          sed -i 's/dh-sequence-bash-completion,\s*//' debian/control
-          sed -i 's/,\s*dh-sequence-bash-completion//' debian/control
+          sed -i '/dh-sequence-bash-completion,/d' debian/control
 
       - name: Build Debian package
         run: |
